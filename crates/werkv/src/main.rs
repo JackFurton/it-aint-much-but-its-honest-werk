@@ -3,6 +3,7 @@ mod db;
 mod resp;
 
 use std::io;
+use std::time::Instant;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
@@ -41,7 +42,7 @@ async fn handle(mut socket: TcpStream, db: Db) -> io::Result<()> {
             match resp::parse(&buf) {
                 Ok((frame, used)) => {
                     buf.drain(..used);
-                    cmd::execute(frame, &db).write_to(&mut out);
+                    cmd::execute(frame, &db, Instant::now()).write_to(&mut out);
                 }
                 Err(ParseError::Incomplete) => break,
                 Err(ParseError::Invalid(msg)) => {
