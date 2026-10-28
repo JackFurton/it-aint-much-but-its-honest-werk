@@ -13,7 +13,9 @@ use resp::{Frame, ParseError};
 #[tokio::main]
 async fn main() -> io::Result<()> {
     // 6380 so it can run next to a real Redis on 6379.
-    let addr = std::env::args().nth(1).unwrap_or_else(|| "127.0.0.1:6380".into());
+    let addr = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "127.0.0.1:6380".into());
     let listener = TcpListener::bind(&addr).await?;
     println!("werkv listening on {addr}");
 

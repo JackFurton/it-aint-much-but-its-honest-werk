@@ -33,7 +33,9 @@ pub fn parse(buf: &[u8]) -> Result<(Frame, usize), ParseError> {
                 return Err(ParseError::Incomplete);
             }
             if &buf[end..end + 2] != b"\r\n" {
-                return Err(ParseError::Invalid("bulk string not terminated by CRLF".into()));
+                return Err(ParseError::Invalid(
+                    "bulk string not terminated by CRLF".into(),
+                ));
             }
             Ok((Frame::Bulk(buf[header_len..end].to_vec()), end + 2))
         }
@@ -50,7 +52,9 @@ pub fn parse(buf: &[u8]) -> Result<(Frame, usize), ParseError> {
             }
             Ok((Frame::Array(items), pos))
         }
-        other => Err(ParseError::Invalid(format!("unknown type byte {other:#04x}"))),
+        other => Err(ParseError::Invalid(format!(
+            "unknown type byte {other:#04x}"
+        ))),
     }
 }
 
@@ -118,7 +122,10 @@ mod tests {
         assert_eq!(used, input.len());
         assert_eq!(
             frame,
-            Frame::Array(vec![Frame::Bulk(b"GET".to_vec()), Frame::Bulk(b"foo".to_vec())])
+            Frame::Array(vec![
+                Frame::Bulk(b"GET".to_vec()),
+                Frame::Bulk(b"foo".to_vec())
+            ])
         );
     }
 
@@ -126,7 +133,11 @@ mod tests {
     fn partial_input_is_incomplete() {
         let input = b"*2\r\n$3\r\nGET\r\n$3\r\nfo";
         for end in 0..input.len() {
-            assert_eq!(parse(&input[..end]), Err(ParseError::Incomplete), "prefix {end}");
+            assert_eq!(
+                parse(&input[..end]),
+                Err(ParseError::Incomplete),
+                "prefix {end}"
+            );
         }
     }
 
@@ -152,7 +163,10 @@ mod tests {
             Frame::Null,
             Frame::Array(vec![]),
         ]);
-        assert_eq!(parse(&encode(&frame)).unwrap(), (frame.clone(), encode(&frame).len()));
+        assert_eq!(
+            parse(&encode(&frame)).unwrap(),
+            (frame.clone(), encode(&frame).len())
+        );
     }
 
     #[test]
