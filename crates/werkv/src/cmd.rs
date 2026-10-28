@@ -52,7 +52,11 @@ mod tests {
     use super::*;
 
     fn run(db: &Db, args: &[&str]) -> Frame {
-        let frame = Frame::Array(args.iter().map(|a| Frame::Bulk(a.as_bytes().to_vec())).collect());
+        let frame = Frame::Array(
+            args.iter()
+                .map(|a| Frame::Bulk(a.as_bytes().to_vec()))
+                .collect(),
+        );
         execute(frame, db)
     }
 
